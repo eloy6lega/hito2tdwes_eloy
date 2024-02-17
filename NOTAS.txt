@@ -1,0 +1,1 @@
+Solucionar tema de editar en el controller. Redirect y edit y esas cosas.

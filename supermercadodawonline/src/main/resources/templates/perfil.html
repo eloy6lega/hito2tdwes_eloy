@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="flex items-center justify-center h-screen">
+    <div class="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
+        <div class="flex justify-center -mt-16">
+            <img class="w-40 h-40 object-cover rounded-full border-2 border-indigo-500" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto de perfil">
+        </div>
+        <div class="text-center px-3 pb-6 pt-2">
+            <h3 class="text-black text-2xl bold font-semibold">Mi perfil</h3>
+            <p class="mt-2 font-light text-grey-dark text-lg" th:if="${!(user==null)}" th:object="${user}" th:text="'Actualmente logueado con: ' + *{nombre} + ' ' + *{apellidos}"></p>
+            <p class="mt-2 font-light text-grey-dark text-lg" th:if="${!(user==null)}" th:object="${user}" th:text="'DNI: ' + *{DNI}"></p>
+            <p class="mt-2 font-light text-grey-dark text-lg" th:if="${!(user==null)}" th:object="${user}" th:text="'Rol: ' + *{rol}"></p>
+            <a href="/" class="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

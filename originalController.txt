@@ -1,0 +1,257 @@
+package com.example.supermercadodawonline.controlv1;
+
+import com.example.supermercadodawonline.model.jpav1.*;
+
+import com.example.supermercadodawonline.repositoriosv1.*;
+
+import com.example.supermercadodawonline.servicios.Carrito;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
+import java.util.Optional;
+
+
+public class Controlador {
+
+    PasswordEncoder encoder;
+
+    private RepositorioProducto reProducto;
+
+    private RepositorioCategoria reCategoria;
+
+    private RepositorioPedido rePedido;
+
+    private RepositorioCliente reCliente;
+
+    private RepositorioDetalle reDetalle;
+
+
+    private Carrito carrito;
+
+    // Representa al cliente que ha iniciado sesión.
+    private Cliente login;
+
+
+
+    @RequestMapping("/productos")
+    public ModelAndView peticionProductos(Authentication aut) {
+        ModelAndView mv = new ModelAndView();
+        List<Producto> productos = reProducto.findAll();
+        mv.addObject("productos", productos);
+        mv.setViewName("productos");
+
+        if (aut == null) {
+            mv.addObject("user", null);
+        }
+        else {
+            mv.addObject("user", login);
+        }
+
+        return mv;
+    }
+
+    @RequestMapping("/categorias")
+    public ModelAndView peticionCategorias() {
+        ModelAndView mv = new ModelAndView();
+        List<Categoria> categorias = reCategoria.findAll();
+        mv.addObject("categorias", categorias);
+        mv.setViewName("categorias");
+        return mv;
+    }
+
+    @RequestMapping("/pedido")
+    public ModelAndView peticionPedido(HttpServletRequest request) {
+        ModelAndView mv = new ModelAndView();
+        String idPedido = request.getParameter("idpedido");
+        int id = Integer.parseInt(idPedido);
+        Optional<Pedido> optPedido = rePedido.findById(id);
+
+        mv.addObject("pedido", optPedido);
+        mv.setViewName("pedido");
+        return mv;
+    }
+
+    @RequestMapping("/editar")
+    public ModelAndView peticionEditar(HttpServletRequest request) {
+        ModelAndView mv = new ModelAndView();
+        String idProducto = request.getParameter("idProducto");
+        int id = Integer.parseInt(idProducto);
+        Optional<Producto> optProducto = reProducto.findById(id);
+        System.out.println(optProducto.get());
+        mv.addObject("categorias", reCategoria.findAll());
+        mv.addObject("producto", optProducto.get());
+        mv.setViewName("editproducto");
+        return mv;
+    }
+
+    @RequestMapping("/guardar")
+    public String peticionGuardar(Producto p) {
+        // El producto devuelto por la vista puede estar incompleto.
+        // Los atributos no incluidos en el formulario vienen vacíos.
+        // Por esta razón buscamos el producto para que esté completo
+        // y lo actualizamos con los cambios del formulario.
+        Optional<Producto> optProducto =
+                reProducto.findById(p.getIdproducto());
+        Producto editado = optProducto.get();
+        Categoria c = new Categoria();
+        c.setIdcategoria(p.getCategoria().getIdcategoria());
+        editado.setCategoria(c);
+        editado.setNombre(p.getNombre());
+        editado.setMedida(p.getMedida());
+        editado.setPrecio(p.getPrecio());
+        editado.setStock(p.getStock());
+        reProducto.save(editado);
+        return "redirect:/";
+    }
+
+    @RequestMapping("/eliminar")
+    public String peticionEliminar(HttpServletRequest request) {
+        String idProducto = request.getParameter("idProducto");
+        int id = Integer.parseInt(idProducto);
+        try {
+            reProducto.deleteById(id);
+        } catch (Exception e) {
+            return "errorfk";
+        }
+        return "redirect:/";
+    }
+
+    @RequestMapping("/nuevo")
+    public ModelAndView peticionNuevo() {
+        ModelAndView mv = new ModelAndView();
+        Producto p = new Producto();
+        p.setCategoria(new Categoria());
+        mv.addObject("producto",p);
+        mv.addObject("categorias", reCategoria.findAll());
+        // Falta pasar a la vista también la lista de categorias.
+        mv.setViewName("nuevoproducto");
+        return mv;
+    }
+
+    @RequestMapping("/guardarnuevo")
+    public String peticionGuardarProducto(Producto p) {
+        int id = reProducto.maxId();
+        id++;
+        p.setIdproducto(id);
+        System.out.println("NUEVO PRODUCTO: "+p);
+        reProducto.save(p);
+        return "redirect:/";
+    }
+
+    @RequestMapping("/denegado")
+    public ModelAndView peticionDenegado(Authentication aut) {
+        ModelAndView mv = new ModelAndView();
+        if(aut==null)
+            mv.addObject("user", "No se ha iniciado sesión");
+        else
+            mv.addObject("user", aut.getName());
+        mv.setViewName("denegado");
+        return mv;
+    }
+
+    @RequestMapping("/perfil")
+    public ModelAndView peticionPerfil(Authentication aut) {
+        ModelAndView mv = new ModelAndView();
+        if (aut == null) {
+            mv.addObject("user", null);
+        }
+        else {
+            login = reCliente.findById(aut.getName()).get();
+            mv.addObject("user", login);
+        }
+        mv.setViewName("perfil");
+        return mv;
+    }
+
+    @RequestMapping("/guardarperfil")
+    public String peticionGuardarPerfil(Cliente cli) {
+        System.out.println(login);
+        reCliente.save(cli);
+        return "redirect:/";
+    }
+
+    @RequestMapping("/contra")
+    public ModelAndView peticionCambiarContraseña() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("contra");
+        return mv;
+    }
+
+    @RequestMapping("/guardarcontra")
+    public String peticionGuardarContraseña(HttpServletRequest request) {
+        String contra = request.getParameter("pw1");
+        login.setPw(encoder.encode(contra));
+        reCliente.save(login);
+        return "redirect:/";
+    }
+
+    @RequestMapping("/carrito")
+    public ModelAndView peticionCarrito() {
+        ModelAndView mv = new ModelAndView();
+        List<Producto> productos = reProducto.findAll();
+        mv.addObject("productos", productos);
+        mv.setViewName("carrito");
+        return mv;
+    }
+
+    @RequestMapping("/addCarrito")
+    public ModelAndView peticionAddCarrito(HttpServletRequest request) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        int unidades = Integer.parseInt(request.getParameter("unidades"));
+        ModelAndView mv = new ModelAndView();
+
+        Producto p = reProducto.findById(id).get();
+        Detalle d = new Detalle();
+        d.setPrecio(p.getPrecio());
+        d.setDescuento(0);
+        d.setUnidades(unidades);
+        d.setProducto(p);
+        d.setPedido(null);
+        carrito.getDetalles().add(d);
+
+        mv.addObject("carrito", carrito);
+        mv.setViewName("vercarrito");
+        return mv;
+    }
+
+    @RequestMapping("/vercarrito")
+    public ModelAndView peticionVerCarrito() {
+
+        ModelAndView mv = new ModelAndView();
+
+        mv.addObject("carrito", carrito);
+        mv.setViewName("vercarrito");
+        return mv;
+    }
+
+    @RequestMapping("/hacerpedido")
+    public String peticionHacerPedido() {
+        Pedido p = new Pedido();
+        p.setIdpedido(rePedido.nextIdPedido());
+        p.setCliente(login);
+
+        java.util.Date date = new java.util.Date();
+        p.setFechapedido(new java.sql.Date(date.getTime()));
+        p.setFechaentrega(null);
+        p.setDetalles(carrito.getDetalles());
+
+        // Guardamos el pedido
+        rePedido.save(p);
+        for (Detalle d : carrito.getDetalles()) {
+            // Guardamos cada detalle de pedido.
+            d.setPedido(p);
+            reDetalle.save(d);
+        }
+
+        carrito.getDetalles().clear();
+        carrito.setPedido(null);
+
+        return "redirect:/";
+    }
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+<div class="text-center mt-4">
+    <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ir al inicio</a>
+</div>
+    <div th:if="${#lists.isEmpty(tareas)}" class="text-center">
+        <p class="text-2xl font-bold">No tienes tareas pendientes</p>
+    </div>
+    <div th:if="${not #lists.isEmpty(tareas)}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div th:each="tar : ${tareas}" class="max-w-sm rounded overflow-hidden shadow-lg m-4 transform hover:scale-105 transition duration-500">
+            <div class="px-6 py-4 border-b ml-4 mr-4">
+                <div class="font-bold text-xl mb-2" th:text="${tar.getTitulo()}"></div>
+                <p class="text-gray-700 text-base" th:text="${tar.getDescripcion()}"></p>
+            </div>
+            <div class="px-6 py-4 border-b ml-4 mr-4">
+                <p>Inicio Previsto: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getInicioPrevisto()}"></span></p>
+                <p>Fin Previsto: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getFinPrevisto()}"></span></p>
+                <p>Inicio Real: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getInicioReal()}"></span></p>
+                <p>Fin Real: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getFinReal()}"></span></p>
+                <p>Estado: <span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-black mr-2 mb-2" th:text="${tar.getEstado()}" th:classappend="${tar.getEstado() == 'En progreso' ? 'bg-green-200' : (tar.getEstado() == 'En espera' ? 'bg-yellow-300' : (tar.getEstado() == 'Pendiente' ? 'bg-red-500' : ''))}"></span></p>
+            </div>
+            <div class="px-6 py-4">
+                <a href="/editar" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                    <i class="fas fa-pencil-alt mr-2"></i>
+                    <span>Editar</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuestros Proyectos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="text-center"><h2><a href="/"><img class="mx-auto w-20 h-16" th:src="@{imagenes/MWlogoNB.png}" alt="Logo MagicWater"></a></h2></div>
+
+<button th:if="${!(user==null) && user.getRol().equals('SUPERVISOR')}" onclick="location.href='/nuevo'" class="bg-green-500 text-white py-3 px-8 text-center no-underline inline-block text-lg mx-1 my-2 cursor-pointer rounded-full">Añadir proyecto</button>
+<h1 class="text-2xl font-bold text-center py-4">Listado de proyectos</h1>
+
+<div class="flex flex-wrap justify-center">
+    <div th:each="proy : ${proyectos}" class="max-w-sm rounded overflow-hidden shadow-lg m-4 transform hover:scale-105 transition duration-500">
+        <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2" th:text="${proy.getNombre()}"></div>
+            <p class="text-gray-700 text-base" th:text="${proy.getDescripcion()}"></p>
+        </div>
+        <div class="px-6 py-4">
+            <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${proy.getZona()}"></span>
+            <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${proy.getFecha()}"></span>
+        </div>
+        <div class="px-6 py-4" th:if="${!(user==null) && user.getRol().equals('SUPERVISOR')}">
+            <a th:href="${'/eliminar?idProyecto='+proy.getIdproyecto()}">
+                <img src="https://static-00.iconduck.com/assets.00/trash-icon-462x512-njvey5nf.png" alt="Eliminar" width="35" height="35">
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

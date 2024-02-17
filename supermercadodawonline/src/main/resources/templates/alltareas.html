@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="text-center mt-4">
+    <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ir al inicio</a>
+</div>
+<h2 class="text-2xl font-bold text-center py-4">Mis Tareas</h2>
+
+<div class="flex flex-wrap justify-center">
+    <div th:each="tar : ${tareas}" class="max-w-sm rounded overflow-hidden shadow-lg m-4 transform hover:scale-105 transition duration-500">
+        <div class="px-6 py-4 border-b ml-4 mr-4">
+            <div class="font-bold text-xl mb-2" th:text="${tar.getTitulo()}"></div>
+            <p class="text-gray-700 text-base" th:text="${tar.getDescripcion()}"></p>
+        </div>
+        <div class="px-6 py-4 border-b ml-4 mr-4">
+            <p>Inicio Previsto: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getInicioPrevisto()}"></span></p>
+            <p>Fin Previsto: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getFinPrevisto()}"></span></p>
+            <p>Inicio Real: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getInicioReal()}"></span></p>
+            <p>Fin Real: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" th:text="${tar.getFinReal()}"></span></p>
+            <p>Estado: <span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-black mr-2 mb-2" th:text="${tar.getEstado()}" th:classappend="${tar.getEstado() == 'En progreso' ? 'bg-green-200' : (tar.getEstado() == 'En espera' ? 'bg-yellow-300' : (tar.getEstado() == 'Pendiente' ? 'bg-red-500' : ''))}"></span></p>
+        </div>
+        <div class="px-6 py-4 border-b ml-4 mr-4">
+            <p>Esta tarea está encargada a <span th:text="${tar.getCliente().getNombre()} + ' ' + ${tar.getCliente().getApellidos()}"></span> con DNI <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2" th:text="${tar.getCliente().getDNI()}"></span></p>
+        </div>
+        <div class="px-6 py-4 border-b ml-4 mr-4">
+            <h3>Especialidad</h3>
+            <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2" th:text="${tar.getCliente().getCategoria()}"></span>
+        </div>
+        <div class="px-6 py-4">
+            <h3>Información de contacto</h3>
+            <p>Teléfono: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2" th:text="${tar.getCliente().getTlf()}"></span></p>
+            <p>Correo electrónico: <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2" th:text="${tar.getCliente().getEmail()}"></span></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

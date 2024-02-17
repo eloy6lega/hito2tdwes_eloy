@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos del supermercado</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+<nav class="flex justify-around bg-white p-4 shadow-md">
+    <a class="no-underline text-gray-500 text-lg hover:text-orange-500" th:if="${!(user==null) && (user.getRol().equals('SUPERVISOR') || user.getRol().equals('TRABAJADOR'))}" href="/proyectos">Todos los Proyectos</a>
+    <a class="no-underline text-orange-500 text-lg hover:text-orange-500 font-bold shadow" th:if="${user==null}" th:href="@{/login}">Iniciar sesión</a>
+    <a class="no-underline text-gray-500 text-lg hover:text-orange-500" th:if="${!(user==null) && user.getRol().equals('SUPERVISOR')}" th:href="@{/alltareas}">Todas las Tareas</a>
+    <a class="no-underline text-gray-500 text-lg hover:text-orange-500" th:if="${!(user==null) && user.getRol().equals('TRABAJADOR')}" th:href="@{/mistareas}">Mis Tareas</a>
+    <a class="no-underline text-gray-500 text-lg hover:text-orange-500" th:if="${!(user==null)}" th:href="@{/perfil}">Perfil</a>
+    <a class="no-underline text-gray-500 text-lg hover:text-orange-500" th:if="${!(user==null)}" th:href="@{/logout}">Cerrar sesión</a>
+</nav>
+<div class="flex items-center justify-center" style="height: calc(100vh - 64px);">
+    <img class="rounded-lg shadow-lg" src="https://www.laboratoriosdiama.com/wp-content/uploads/2021/08/analisis-aguas.jpg" alt="Análisis de aguas">
+</div>
+</body>
+</html>

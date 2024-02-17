@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <link rel="stylesheet" type="text/css" href="estilos.css">
+    <style>
+        body{
+            background-color: #af2e2e;
+        }
+        .container {
+            text-align: center;
+            margin-top: 100px; /* Ajusta el margen superior según necesites */
+        }
+
+        .logo {
+            filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5)); /* Añade sombra a la imagen */
+        }
+
+        .error-info {
+            margin: 0 auto; /* Centra el contenedor */
+            background-color: #e7dada;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade sombra al contenedor */
+            width: 900px;
+            height: auto;
+        }
+
+        h1, h2 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="/"><img class="logo" th:src="@{imagenes/MWtextNBpng.png}" alt="Logo MagicWater"></a>
+    <div class="error-info">
+        <h1>Ha ocurrido un error <span th:text="${status}"></span></h1>
+        <h1>Error: <span th:text="${error}"></span></h1>
+        <h1>Path: <span th:text="${path}"></span></h1>
+        <h2>Si el problema persiste, jodete</h2>
+    </div>
+</div>
+</body>
+</html>
