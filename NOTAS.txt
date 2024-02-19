@@ -1,1 +1,1 @@
-Solucionar tema de editar en el controller. Redirect y edit y esas cosas.
+Queda añadir opcion de delete tarea para usuario + MEMORIA rápida

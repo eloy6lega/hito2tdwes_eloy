@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -96,6 +100,19 @@ public class Controlador {
         return mv;
     }
 
+    @RequestMapping("/nuevatarea")
+    public ModelAndView peticionNuevaTarea(Authentication authentication) {
+        ModelAndView mv = new ModelAndView();
+        Tarea t = new Tarea();
+        mv.addObject("tarea",t);
+        List<Proyecto> p = reProyecto.findAll();
+        mv.addObject("proyectos", p);
+        Cliente user = reCliente.findById(authentication.getName()).get();
+        mv.addObject("user", user);
+        mv.setViewName("nuevatarea");
+        return mv;
+    }
+
     @RequestMapping("/guardarnuevo")
     public String peticionGuardarProyecto(Proyecto p) {
         int id = reProyecto.findMaxId();
@@ -103,6 +120,19 @@ public class Controlador {
         p.setIdproyecto(id);
         System.out.println("NUEVO PROYECTO: "+p);
         reProyecto.save(p);
+        return "redirect:/";
+    }
+
+    @RequestMapping("/guardarnuevatarea")
+    public String peticionGuardarNuevaTarea(Tarea t, Authentication aut) {
+        int id = reTarea.findMaxId();
+        id++;
+        t.setIdtarea(id);
+        Cliente clienteActual = reCliente.findById(aut.getName()).get();
+        t.setCliente(clienteActual);
+        t.setEstado("En espera");
+        System.out.println("NUEVA TAREA: "+t);
+        reTarea.save(t);
         return "redirect:/";
     }
 
@@ -164,27 +194,63 @@ public class Controlador {
         return mv;
     }
 
-    @RequestMapping("/editar")
-    public ModelAndView peticionEditar(HttpServletRequest request) {
+    @RequestMapping(value = "/editar", method = RequestMethod.GET)
+    public ModelAndView peticionEditar(@RequestParam("idtarea") int id, Authentication authentication) {
         ModelAndView mv = new ModelAndView();
-        String idtarea = request.getParameter("idtarea");
-        int id = Integer.parseInt(idtarea);
         Optional<Tarea> optTarea = reTarea.findById(id);
-        System.out.println(optTarea.get());
-        mv.addObject("proyecto", reProyecto.findAll());
-        mv.addObject("tarea", optTarea.get());
-        mv.setViewName("edittarea");
+        if (optTarea.isPresent()) {
+            Tarea tarea = optTarea.get();
+            if (tarea.getCliente().getDNI().equals(authentication.getName())) {
+                mv.addObject("tarea", tarea);
+                List<Proyecto> proyectos = reProyecto.findAll();
+                mv.addObject("proyectos", proyectos);
+                mv.setViewName("edittarea");
+            } else {
+                mv.setViewName("error");
+            }
+        } else {
+            mv.setViewName("error");
+        }
         return mv;
+    }
+
+    @RequestMapping(value = "/editar", method = RequestMethod.POST)
+    public String peticionEditarPost(@ModelAttribute("tarea") Tarea tareaFormulario, BindingResult result) {
+        if (result.hasErrors()) {
+            return "edittarea";
+        }
+
+        Optional<Tarea> optTareaExistente = reTarea.findById(tareaFormulario.getIdtarea());
+
+        if (optTareaExistente.isPresent()) {
+            Tarea tareaExistente = optTareaExistente.get();
+
+            // Actualiza solo los campos que se han modificado en el formulario
+            if (tareaFormulario.getTitulo() != null) {
+                tareaExistente.setTitulo(tareaFormulario.getTitulo());
+            }
+            if (tareaFormulario.getDescripcion() != null) {
+                tareaExistente.setDescripcion(tareaFormulario.getDescripcion());
+            }
+            if (tareaFormulario.getInicioPrevisto() != null) {
+                tareaExistente.setInicioPrevisto(tareaFormulario.getInicioPrevisto());
+            }
+            if (tareaFormulario.getFinPrevisto() != null) {
+                tareaExistente.setFinPrevisto(tareaFormulario.getFinPrevisto());
+            }
+            if (tareaFormulario.getEstado() != null) {
+                tareaExistente.setEstado(tareaFormulario.getEstado());
+            }
+
+            reTarea.save(tareaExistente);
+        }
+
+        return "redirect:/";
     }
 
     @RequestMapping("/guardar")
     public String peticionGuardar(Tarea t) {
-        // El producto devuelto por la vista puede estar incompleto.
-        // Los atributos no incluidos en el formulario vienen vacíos.
-        // Por esta razón buscamos el producto para que esté completo
-        // y lo actualizamos con los cambios del formulario.
-        Optional<Tarea> optTarea =
-                reTarea.findById(t.getIdtarea());
+        Optional<Tarea> optTarea = reTarea.findById(t.getIdtarea());
         Tarea editado = optTarea.get();
         Proyecto p = new Proyecto();
         p.setIdproyecto(p.getIdproyecto());

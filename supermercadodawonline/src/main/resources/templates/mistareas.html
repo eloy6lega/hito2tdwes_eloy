@@ -9,6 +9,10 @@
 <body class="bg-gray-100">
 <div class="text-center mt-4">
     <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ir al inicio</a>
+    <a href="/nuevatarea" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center ml-4">
+        <i class="fas fa-plus-circle mr-2"></i>
+        <span>Crear Tarea</span>
+    </a>
 </div>
     <div th:if="${#lists.isEmpty(tareas)}" class="text-center">
         <p class="text-2xl font-bold">No tienes tareas pendientes</p>
@@ -27,7 +31,7 @@
                 <p>Estado: <span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-black mr-2 mb-2" th:text="${tar.getEstado()}" th:classappend="${tar.getEstado() == 'En progreso' ? 'bg-green-200' : (tar.getEstado() == 'En espera' ? 'bg-yellow-300' : (tar.getEstado() == 'Pendiente' ? 'bg-red-500' : ''))}"></span></p>
             </div>
             <div class="px-6 py-4">
-                <a href="/editar" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                <a th:href="@{/editar(idtarea=${tar.idtarea})}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
                     <i class="fas fa-pencil-alt mr-2"></i>
                     <span>Editar</span>
                 </a>

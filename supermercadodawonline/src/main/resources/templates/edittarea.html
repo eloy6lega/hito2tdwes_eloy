@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Editar Tarea</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<h1>Barrena gay</h1>
+<body class="bg-gray-100">
+<div class="text-center pt-4"><h2><a href="/">
+    <img class="mx-auto w-20 h-16" th:src="@{imagenes/MWlogoNB.png}" alt="Logo MagicWater"></a></h2>
+    <a href="/" class="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded">Volver al inicio</a>
+</div>
+<div class="flex items-start justify-center pt-12">
+    <form th:action="@{/editar}" th:object="${tarea}" method="post" class="text-center w-full max-w-xl bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Editar la tarea</h2>
+        <input type="hidden" th:field="*{idtarea}" required>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="titulo">Título</label>
+            <input th:field="*{titulo}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="titulo" type="text" placeholder="Título">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="descripcion">Descripción</label>
+            <textarea th:field="*{descripcion}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="descripcion" placeholder="Descripción" required></textarea>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="inicio">Fecha de inicio</label>
+            <input th:field="*{inicioPrevisto}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="inicio" type="date">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="fin">Fecha de fin</label>
+            <input th:field="*{finPrevisto}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="fin" type="date">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="progreso">Progreso</label>
+            <select th:field="*{estado}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="progreso">
+                <option value="En espera">En espera</option>
+                <option value="En progreso">En progreso</option>
+                <option value="Pendiente">Pendiente</option>
+            </select>
+        </div>
+        <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
 </body>
 </html>
